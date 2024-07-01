@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import ReactQuill from 'react-quill';
@@ -16,11 +16,28 @@ interface Upload {
 }
 
 const Create: React.FC = () => {
+  
   const [formData, setFormData] = useState({
     textEditorContent: "",
     dropdowns: [{ id: 1, value: "" }],
-    uploads: [{ id: 1, file: null }] as Upload[]  // Explicitly specify type for initial state
+    uploads: [{ id: 1, file: null }] as Upload[]  
   });
+  const [usernames, setUsernames] = useState<string[]>([]);
+
+  useEffect(() => {
+    
+    const fetchUsernames = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/");
+        const data = await response.json();
+        setUsernames(data.usernames); 
+      } catch (error) {
+        console.error("Error fetching usernames:", error);
+      }
+    };
+
+    fetchUsernames();
+  }, []);
 
   const handleTextEditorChange = (content: string) => {
     setFormData({
@@ -126,9 +143,11 @@ const Create: React.FC = () => {
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
               >
                 <option value="">Select an option</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                {usernames.map((username) => (
+                  <option key={username} value={username}>
+                    {username}
+                  </option>
+                ))}
               </select>
             </div>
           ))}
