@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/landing-page/Container";
@@ -7,7 +8,9 @@ import { Navbar } from "@/components/landing-page/Navbar";
 import { Metadata } from "next";
 
 
+
 const SignIn: React.FC = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,21 +23,26 @@ const SignIn: React.FC = () => {
     setPassword(e.target.value);
   };
 
+  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/users/login", {
+      const response = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Accept': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
+      //.then(response => response.json())
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.msg || "Failed to sign in");
       }
       // Handle successful sign-in, e.g., store token in localStorage, redirect user
+      router.push("/dashboard");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -100,7 +108,7 @@ const SignIn: React.FC = () => {
                         value={password}
                         onChange={handlePasswordChange}
                         placeholder="6+ Characters, 1 Capital letter"
-                        className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-white outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                       <span className="absolute right-4 top-4">
                         <svg
