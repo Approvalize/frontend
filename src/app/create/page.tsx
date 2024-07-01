@@ -5,14 +5,8 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-interface Dropdown {
-  id: number;
-  value: string;
-}
-
-interface Upload {
-  id: number;
-  file: File | null;
+interface Username {
+  username: string;
 }
 
 const Create: React.FC = () => {
@@ -20,17 +14,22 @@ const Create: React.FC = () => {
   const [formData, setFormData] = useState({
     textEditorContent: "",
     dropdowns: [{ id: 1, value: "" }],
-    uploads: [{ id: 1, file: null }] as Upload[]  
+    uploads: [{ id: 1, file: null }]
   });
-  const [usernames, setUsernames] = useState<string[]>([]);
+  const [usernames, setUsernames] = useState<Username[]>([]);
 
   useEffect(() => {
     
     const fetchUsernames = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/");
-        const data = await response.json();
-        setUsernames(data.usernames); 
+        // Replace with your actual endpoint
+        const response = await fetch("http://localhost:5000/api/users/getapprovers");
+        if (response.ok) {
+          const data = await response.json();
+          setUsernames(data || []);
+        } else {
+          console.error("Failed to fetch usernames:", response.statusText);
+        }
       } catch (error) {
         console.error("Error fetching usernames:", error);
       }
@@ -85,7 +84,7 @@ const Create: React.FC = () => {
     );
     setFormData({
       ...formData,
-      uploads: updatedUploads
+      //uploads: updatedUploads
     });
   };
 
@@ -144,8 +143,8 @@ const Create: React.FC = () => {
               >
                 <option value="">Select an option</option>
                 {usernames.map((username) => (
-                  <option key={username} value={username}>
-                    {username}
+                  <option key={username.username} value={username.username}>
+                    {username.username}
                   </option>
                 ))}
               </select>
