@@ -9,9 +9,27 @@ interface Username {
   username: string;
 }
 
+interface Dropdown {
+  id: number;
+  value: string;
+}
+
+interface Upload {
+  id: number;
+  file: File | null;
+}
+
+interface FormData {
+  subject: string;
+  textEditorContent: string;
+  dropdowns: Dropdown[];
+  uploads: Upload[];
+}
+
 const Create: React.FC = () => {
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
+    subject: "",
     textEditorContent: "",
     dropdowns: [{ id: 1, value: "" }],
     uploads: [{ id: 1, file: null }]
@@ -20,10 +38,8 @@ const Create: React.FC = () => {
   const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
 
   useEffect(() => {
-    
     const fetchUsernames = async () => {
       try {
-        // Replace with your actual endpoint
         const response = await fetch("http://localhost:5000/api/users/getapprovers");
         if (response.ok) {
           const data = await response.json();
@@ -39,19 +55,49 @@ const Create: React.FC = () => {
     fetchUsernames();
   }, []);
 
+  const saveFormData = async (updatedFormData: FormData) => {
+    try {
+      const response = await fetch("http://localhost:5000//api/applications/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedFormData),
+      });
+      if (response.ok) {
+        console.error("Failed to save form data:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error saving form data:", error);
+    }
+  };
+
   const handleTextEditorChange = (content: string) => {
-    setFormData({
+    const updatedFormData: FormData = {
       ...formData,
-      textEditorContent: content
-    });
+      textEditorContent: content,
+    };
+    setFormData(updatedFormData);
+    saveFormData(updatedFormData);
+  };
+
+  const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedFormData: FormData = {
+      ...formData,
+      subject: e.target.value,
+    };
+    setFormData(updatedFormData);
+    saveFormData(updatedFormData);
   };
 
   const handleAddDropdown = () => {
     const newId = formData.dropdowns.length + 1;
-    setFormData({
+    const updatedFormData: FormData = {
       ...formData,
-      dropdowns: [...formData.dropdowns, { id: newId, value: "" }]
-    });
+      dropdowns: [...formData.dropdowns, { id: newId, value: "" }],
+    };
+    setFormData(updatedFormData);
+    saveFormData(updatedFormData);
   };
 
   const handleDropdownChange = (
@@ -61,20 +107,23 @@ const Create: React.FC = () => {
     const updatedDropdowns = formData.dropdowns.map(dropdown =>
       dropdown.id === id ? { ...dropdown, value: e.target.value } : dropdown
     );
-    setFormData({
+    const updatedFormData: FormData = {
       ...formData,
-      dropdowns: updatedDropdowns
-    });
-
+      dropdowns: updatedDropdowns,
+    };
+    setFormData(updatedFormData);
     setSelectedUsernames([...selectedUsernames, e.target.value]);
+    saveFormData(updatedFormData);
   };
 
   const handleAddUpload = () => {
     const newId = formData.uploads.length + 1;
-    setFormData({
+    const updatedFormData: FormData = {
       ...formData,
-      uploads: [...formData.uploads, { id: newId, file: null }]
-    });
+      uploads: [...formData.uploads, { id: newId, file: null }],
+    };
+    setFormData(updatedFormData);
+    saveFormData(updatedFormData);
   };
 
   const handleFileChange = (
@@ -85,15 +134,16 @@ const Create: React.FC = () => {
     const updatedUploads = formData.uploads.map(upload =>
       upload.id === id ? { ...upload, file: file } : upload
     );
-    setFormData({
+    const updatedFormData: FormData = {
       ...formData,
-      //uploads: updatedUploads
-    });
+      uploads: updatedUploads,
+    };
+    setFormData(updatedFormData);
+    saveFormData(updatedFormData);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log(formData);
   };
 
@@ -102,6 +152,20 @@ const Create: React.FC = () => {
       <Breadcrumb pageName="Create" />
       <div className="mx-auto max-w-270">
         <form onSubmit={handleSubmit}>
+          {/* Subject Input */}
+          <div className="mb-4">
+            <label htmlFor="subject" className="block text-sm font-medium text-black dark:text-white">
+              Subject
+            </label>
+            <input
+              type="text"
+              id="subject"
+              value={formData.subject}
+              onChange={handleSubjectChange}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
+            />
+          </div>
+
           {/* Text Editor */}
           <div className="mb-4">
             <label htmlFor="textEditor" className="block text-sm font-medium text-black dark:text-white">
@@ -150,8 +214,6 @@ const Create: React.FC = () => {
                     {username.username}
                   </option>
                 ))}
-                
-                 
               </select>
             </div>
           ))}
