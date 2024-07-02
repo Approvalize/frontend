@@ -17,6 +17,7 @@ const Create: React.FC = () => {
     uploads: [{ id: 1, file: null }]
   });
   const [usernames, setUsernames] = useState<Username[]>([]);
+  const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
 
   useEffect(() => {
     
@@ -64,6 +65,8 @@ const Create: React.FC = () => {
       ...formData,
       dropdowns: updatedDropdowns
     });
+
+    setSelectedUsernames([...selectedUsernames, e.target.value]);
   };
 
   const handleAddUpload = () => {
@@ -147,6 +150,8 @@ const Create: React.FC = () => {
                     {username.username}
                   </option>
                 ))}
+                
+                 
               </select>
             </div>
           ))}

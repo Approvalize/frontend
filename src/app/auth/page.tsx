@@ -38,8 +38,8 @@ const SignIn: React.FC = () => {
       });
       //.then(response => response.json())
       const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.msg || "Failed to sign in");
+      if (response.ok) {
+        (data.msg || "Login successful! Redirecting to dashboard...");
       }
       // Handle successful sign-in, e.g., store token in localStorage, redirect user
       router.push("/dashboard");
