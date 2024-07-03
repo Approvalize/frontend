@@ -14,25 +14,17 @@ interface Dropdown {
   value: string;
 }
 
-interface Upload {
-  id: number;
-  file: File | null;
-}
-
 interface FormData {
   subject: string;
   textEditorContent: string;
   dropdowns: Dropdown[];
-  uploads: Upload[];
 }
 
 const Create: React.FC = () => {
-  
   const [formData, setFormData] = useState<FormData>({
     subject: "",
     textEditorContent: "",
     dropdowns: [{ id: 1, value: "" }],
-    uploads: [{ id: 1, file: null }]
   });
   const [usernames, setUsernames] = useState<Username[]>([]);
   const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
@@ -57,14 +49,17 @@ const Create: React.FC = () => {
 
   const saveFormData = async (updatedFormData: FormData) => {
     try {
-      const response = await fetch("http://localhost:5000//api/applications/create", {
+      const response = await fetch("http://localhost:5000/api/applications/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": "Bearer JWT_SECRET" // Replace with actual JWT token
         },
         body: JSON.stringify(updatedFormData),
       });
       if (response.ok) {
+        console.log("Form data saved successfully");
+      } else {
         console.error("Failed to save form data:", response.statusText);
       }
     } catch (error) {
@@ -73,31 +68,24 @@ const Create: React.FC = () => {
   };
 
   const handleTextEditorChange = (content: string) => {
-    const updatedFormData: FormData = {
-      ...formData,
+    setFormData(prevFormData => ({
+      ...prevFormData,
       textEditorContent: content,
-    };
-    setFormData(updatedFormData);
-    saveFormData(updatedFormData);
+    }));
   };
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedFormData: FormData = {
-      ...formData,
+    setFormData(prevFormData => ({
+      ...prevFormData,
       subject: e.target.value,
-    };
-    setFormData(updatedFormData);
-    saveFormData(updatedFormData);
+    }));
   };
 
   const handleAddDropdown = () => {
-    const newId = formData.dropdowns.length + 1;
-    const updatedFormData: FormData = {
-      ...formData,
-      dropdowns: [...formData.dropdowns, { id: newId, value: "" }],
-    };
-    setFormData(updatedFormData);
-    saveFormData(updatedFormData);
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      dropdowns: [...prevFormData.dropdowns, { id: prevFormData.dropdowns.length + 1, value: "" }],
+    }));
   };
 
   const handleDropdownChange = (
@@ -107,44 +95,16 @@ const Create: React.FC = () => {
     const updatedDropdowns = formData.dropdowns.map(dropdown =>
       dropdown.id === id ? { ...dropdown, value: e.target.value } : dropdown
     );
-    const updatedFormData: FormData = {
-      ...formData,
+    setFormData(prevFormData => ({
+      ...prevFormData,
       dropdowns: updatedDropdowns,
-    };
-    setFormData(updatedFormData);
+    }));
     setSelectedUsernames([...selectedUsernames, e.target.value]);
-    saveFormData(updatedFormData);
   };
 
-  const handleAddUpload = () => {
-    const newId = formData.uploads.length + 1;
-    const updatedFormData: FormData = {
-      ...formData,
-      uploads: [...formData.uploads, { id: newId, file: null }],
-    };
-    setFormData(updatedFormData);
-    saveFormData(updatedFormData);
-  };
-
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: number
-  ) => {
-    const file = e.target.files && e.target.files[0];
-    const updatedUploads = formData.uploads.map(upload =>
-      upload.id === id ? { ...upload, file: file } : upload
-    );
-    const updatedFormData: FormData = {
-      ...formData,
-      uploads: updatedUploads,
-    };
-    setFormData(updatedFormData);
-    saveFormData(updatedFormData);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    await saveFormData(formData);
   };
 
   return (
@@ -152,7 +112,6 @@ const Create: React.FC = () => {
       <Breadcrumb pageName="Create" />
       <div className="mx-auto max-w-270">
         <form onSubmit={handleSubmit}>
-          {/* Subject Input */}
           <div className="mb-4">
             <label htmlFor="subject" className="block text-sm font-medium text-black dark:text-white">
               Subject
@@ -166,7 +125,6 @@ const Create: React.FC = () => {
             />
           </div>
 
-          {/* Text Editor */}
           <div className="mb-4">
             <label htmlFor="textEditor" className="block text-sm font-medium text-black dark:text-white">
               Text Editor
@@ -196,7 +154,6 @@ const Create: React.FC = () => {
             />
           </div>
 
-          {/* Dropdown Boxes */}
           {formData.dropdowns.map((dropdown, index) => (
             <div key={dropdown.id} className="mb-4">
               <label htmlFor={`dropdown-${dropdown.id}`} className="block text-sm font-medium text-black dark:text-white">
@@ -218,7 +175,6 @@ const Create: React.FC = () => {
             </div>
           ))}
 
-          {/* Button to Add Dropdown Box */}
           <button
             type="button"
             onClick={handleAddDropdown}
@@ -227,34 +183,6 @@ const Create: React.FC = () => {
             + Add Dropdown
           </button>
 
-          {/* Upload Boxes */}
-          {formData.uploads.map((upload, index) => (
-            <div key={upload.id} className="mb-4">
-              <label htmlFor={`fileUpload-${upload.id}`} className="block text-sm font-medium text-black dark:text-white">
-                Upload Document {index + 1}
-              </label>
-              <input
-                type="file"
-                id={`fileUpload-${upload.id}`}
-                onChange={(e) => handleFileChange(e, upload.id)}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary dark:text-white"
-              />
-            </div>
-          ))}
-
-          {/* Button to Add Upload Box */}
-          <button
-            type="button"
-            onClick={handleAddUpload}
-            className="mb-4 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 dark:text-white"
-          >
-            + Add Upload
-          </button>
-          
-          {/* Line break */}
-          <br />
-
-          {/* Submit Button */}
           <button
             type="submit"
             className="py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white"
