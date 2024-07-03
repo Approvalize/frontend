@@ -1,30 +1,28 @@
 'use client';
+
 import React, { useState, useEffect } from "react";
+import dynamic from 'next/dynamic';
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 interface Username {
   username: string;
 }
 
-interface Dropdown {
-  id: number;
-  value: string;
-}
-
 interface FormData {
-  subject: string;
-  textEditorContent: string;
-  dropdowns: Dropdown[];
+  title: string;
+  description: string;
+  approverPath: string[];
 }
 
 const Create: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    subject: "",
-    textEditorContent: "",
-    dropdowns: [{ id: 1, value: "" }],
+    title: "",
+    description: "",
+    approverPath: [""],
   });
   const [usernames, setUsernames] = useState<Username[]>([]);
   const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
@@ -43,9 +41,25 @@ const Create: React.FC = () => {
         console.error("Error fetching usernames:", error);
       }
     };
-
+    console.log("Fetching usernames...");
     fetchUsernames();
   }, []);
+
+  const fetchUserIdByUsername = async (username: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/users/username/${username}/id`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.userId;
+      } else {
+        console.error("Failed to fetch user ID:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching user ID:", error);
+    }
+    console.log("Fetching user ID for username:", username);
+    return null;
+  };
 
   const saveFormData = async (updatedFormData: FormData) => {
     try {
@@ -53,58 +67,76 @@ const Create: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer JWT_SECRET" // Replace with actual JWT token
+           // Replace with actual JWT token
         },
         body: JSON.stringify(updatedFormData),
       });
+      console.log("Response:", response);
       if (response.ok) {
-        console.log("Form data saved successfully");
+        const result = await response.json();
+        console.log("Form data saved successfully:", result);
       } else {
-        console.error("Failed to save form data:", response.statusText);
+        const result = await response.json();
+        console.error("Failed to save form data:", response.statusText, result.message);
       }
     } catch (error) {
       console.error("Error saving form data:", error);
     }
+    console.log("Saving form data:", updatedFormData);
   };
 
   const handleTextEditorChange = (content: string) => {
     setFormData(prevFormData => ({
       ...prevFormData,
-      textEditorContent: content,
+      description: content,
     }));
   };
 
-  const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prevFormData => ({
       ...prevFormData,
-      subject: e.target.value,
+      title: e.target.value,
     }));
   };
 
   const handleAddDropdown = () => {
     setFormData(prevFormData => ({
       ...prevFormData,
-      dropdowns: [...prevFormData.dropdowns, { id: prevFormData.dropdowns.length + 1, value: "" }],
+      approverPath: [...prevFormData.approverPath, ""],
     }));
   };
 
   const handleDropdownChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
-    id: number
+    index: number
   ) => {
-    const updatedDropdowns = formData.dropdowns.map(dropdown =>
-      dropdown.id === id ? { ...dropdown, value: e.target.value } : dropdown
-    );
+    const updatedApproverPath = [...formData.approverPath];
+    updatedApproverPath[index] = e.target.value;
     setFormData(prevFormData => ({
       ...prevFormData,
-      dropdowns: updatedDropdowns,
+      approverPath: updatedApproverPath,
     }));
     setSelectedUsernames([...selectedUsernames, e.target.value]);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await saveFormData(formData);
+    console.log("Form Data on Submit:", formData);
+  
+    const approverPathWithIds = await Promise.all(
+      formData.approverPath.map(async (username) => {
+        const userId = await fetchUserIdByUsername(username);
+        return userId;
+      })
+    );
+  
+    const updatedFormData = {
+      ...formData,
+      approverPath: approverPathWithIds.filter(id => id !== null) as string[],
+    };
+  
+    console.log("Updated Form Data with IDs:", updatedFormData);
+    await saveFormData(updatedFormData);
   };
 
   return (
@@ -113,25 +145,25 @@ const Create: React.FC = () => {
       <div className="mx-auto max-w-270">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="subject" className="block text-sm font-medium text-black dark:text-white">
-              Subject
+            <label htmlFor="title" className="block text-sm font-medium text-black dark:text-white">
+              Title
             </label>
             <input
               type="text"
-              id="subject"
-              value={formData.subject}
-              onChange={handleSubjectChange}
+              id="title"
+              value={formData.title}
+              onChange={handleTitleChange}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div className="mb-4">
             <label htmlFor="textEditor" className="block text-sm font-medium text-black dark:text-white">
-              Text Editor
+              Description
             </label>
             <ReactQuill
               id="textEditor"
-              value={formData.textEditorContent}
+              value={formData.description}
               onChange={handleTextEditorChange}
               modules={{
                 toolbar: [
@@ -154,15 +186,15 @@ const Create: React.FC = () => {
             />
           </div>
 
-          {formData.dropdowns.map((dropdown, index) => (
-            <div key={dropdown.id} className="mb-4">
-              <label htmlFor={`dropdown-${dropdown.id}`} className="block text-sm font-medium text-black dark:text-white">
+          {formData.approverPath.map((dropdownValue, index) => (
+            <div key={index} className="mb-4">
+              <label htmlFor={`dropdown-${index}`} className="block text-sm font-medium text-black dark:text-white">
                 Dropdown {index + 1}
               </label>
               <select
-                id={`dropdown-${dropdown.id}`}
-                value={dropdown.value}
-                onChange={(e) => handleDropdownChange(e, dropdown.id)}
+                id={`dropdown-${index}`}
+                value={dropdownValue}
+                onChange={(e) => handleDropdownChange(e, index)}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
               >
                 <option value="">Select an option</option>
