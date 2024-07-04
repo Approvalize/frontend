@@ -5,11 +5,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/landing-page/Container";
 import { Navbar } from "@/components/landing-page/Navbar";
+import { useUser } from "@/components/UserContext";
 import { Metadata } from "next";
 
 
 
 const SignIn: React.FC = () => {
+  const { login } = useUser();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,21 +30,10 @@ const SignIn: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      //.then(response => response.json())
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.msg || "Failed to sign in");
-      }
-      // Handle successful sign-in, e.g., store token in localStorage, redirect user
+      const response= await login(email, password);
+      console.log(response);
       router.push("/dashboard-approver");
+
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

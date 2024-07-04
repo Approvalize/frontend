@@ -24,6 +24,7 @@ interface ReviewCardProps {
   onApprove: () => void;
   onReject: () => void;
   imageUrl?: string;
+  status: "pending" | "approved" | "rejected"; // Add status prop
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -35,6 +36,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
   onApprove,
   onReject,
   imageUrl,
+  status,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -97,12 +99,22 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
         </CardContent>
       </Collapse>
       <CardActions>
-        <Button variant="contained" color="primary" onClick={onApprove}>
-          Approve
-        </Button>
-        <Button variant="contained" color="secondary" onClick={onReject}>
-          Reject
-        </Button>
+        {status === "pending" && (
+          <>
+            <Button variant="contained" color="primary" onClick={onApprove}>
+              Approve
+            </Button>
+            <Button variant="contained" color="secondary" onClick={onReject}>
+              Reject
+            </Button>
+          </>
+        )}
+        {/* Optionally, you can add a conditional check for "approved" status to hide buttons */}
+        {status === "approved" && (
+          <Typography variant="body2" color="text.secondary">
+            Approved
+          </Typography>
+        )}
       </CardActions>
     </Card>
   );

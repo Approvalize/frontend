@@ -5,6 +5,7 @@ import "@/css/satoshi.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
+import { UserProvider } from "@/components/UserContext";
 
 export default function RootLayout({
   children,
@@ -21,6 +22,7 @@ export default function RootLayout({
   }, []);
 
   return (
+    <UserProvider>
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <div className="dark:bg-boxdark-2 dark:text-bodydark">
@@ -28,5 +30,6 @@ export default function RootLayout({
         </div>
       </body>
     </html>
+    </UserProvider>
   );
 }

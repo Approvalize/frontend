@@ -1,18 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import ReviewCard from "@/components/CardUser";
+import { useUser } from "@/components/UserContext";
 
 const User: React.FC = () => {
   const [requests, setRequests] = useState<any[]>([]);
+  const { userId } = useUser();
+  console.log(userId);
 
   useEffect(() => {
-    const userId = "667813720d4eb70bee60e62f"; // Replace with actual userId or retrieve dynamically
-    fetchRequests(userId);
-  }, []);
+    if (userId) {
+      fetchRequests(userId);
+    }
+  }, [userId]);
 
   const fetchRequests = async (userId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/applications/user/${userId}`); // Adjust the endpoint according to your backend route
+      const response = await fetch(`http://localhost:5000/api/applications/user/${userId}`); 
       if (!response.ok) {
         throw new Error("Failed to fetch requests");
       }
@@ -23,7 +27,7 @@ const User: React.FC = () => {
         // Fetch usernames for approverPath
         const usernames = await Promise.all(req.approverPath.map(async (approverId: string) => {
           try {
-            const userResponse = await fetch(`http://localhost:5000/api/users/${approverId}`); // Adjust endpoint to fetch user details
+            const userResponse = await fetch(`http://localhost:5000/api/users/${approverId}`); 
             if (!userResponse.ok) {
               throw new Error("Failed to fetch user details");
             }

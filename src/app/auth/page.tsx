@@ -6,11 +6,11 @@ import Link from "next/link";
 import { Container } from "@/components/landing-page/Container";
 import { Navbar } from "@/components/landing-page/Navbar";
 import { Metadata } from "next";
-
-
+import { useUser } from "@/components/UserContext";
 
 const SignIn: React.FC = () => {
   const router = useRouter();
+  const { login } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -23,25 +23,10 @@ const SignIn: React.FC = () => {
     setPassword(e.target.value);
   };
 
-  
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      //.then(response => response.json())
-      const data = await response.json();
-      if (response.ok) {
-        (data.msg || "Login successful! Redirecting to dashboard...");
-      }
-      // Handle successful sign-in, e.g., store token in localStorage, redirect user
+      await login(email, password);
       router.push("/dashboard");
     } catch (err: unknown) {
       if (err instanceof Error) {
