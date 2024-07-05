@@ -35,6 +35,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         setUserId(data.userId);
         localStorage.setItem('userId', data.userId); // Save userId to local storage
+        localStorage.setItem('token', data.token);
       } else {
         throw new Error(data.msg || "Login failed");
       }

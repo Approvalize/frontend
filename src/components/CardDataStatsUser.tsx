@@ -26,7 +26,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({ title }) => {
       {isPopupOpen && (
         <Popup
           date="2024-03-30" // Replace with actual date
-          letterType="Pending" // Replace with actual letter type
+          letterType="pending" // Replace with actual letter type
           onClose={() => setIsPopupOpen(false)}
         />
       )}

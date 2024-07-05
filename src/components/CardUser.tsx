@@ -20,7 +20,7 @@ interface ReviewCardProps {
   title: string;
   subheader: string;
   content: string;
-  description: string;
+  description: any;
   imageUrl?: string;
 }
 
@@ -36,6 +36,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+    console.log(description)
   };
 
   return (
@@ -85,7 +86,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {description}
+          {description["approvers"]}
         </CardContent>
       </Collapse>
     </Card>

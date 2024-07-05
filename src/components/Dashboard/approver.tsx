@@ -30,7 +30,7 @@ const Approver: React.FC = () => {
         throw new Error("Failed to fetch requests");
       }
       const data = await response.json();
-
+      console.log(data);
       // Process each request to fetch usernames for approverPath
       const updatedRequests = await Promise.all(data.map(async (req: any) => {
         // Fetch usernames for approverPath
@@ -41,6 +41,7 @@ const Approver: React.FC = () => {
               throw new Error("Failed to fetch user details");
             }
             const userData = await userResponse.json();
+            
             return userData.username; // Assuming username is available in user data
           } catch (error) {
             console.error("Error fetching user details:", error);
@@ -73,7 +74,16 @@ const Approver: React.FC = () => {
     }
   }, [userId]);
 
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
+
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:5000/api/applications/${id}/approve`,{
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`         
+      }})
+
     setReviews((prevReviews) =>
       prevReviews.map((review) =>
         review._id === id ? { ...review, status: "approved" } : review
@@ -81,7 +91,16 @@ const Approver: React.FC = () => {
     );
   };  
 
-  const handleReject = (id: string) => {
+  const handleReject = async (id: string) => {
+
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:5000/api/applications/${id}/reject`,{
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`         
+      }})
+
     setReviews((prevReviews) =>
       prevReviews.map((review) =>
         review._id === id ? { ...review, status: "rejected" } : review

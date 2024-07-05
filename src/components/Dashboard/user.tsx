@@ -21,10 +21,13 @@ const User: React.FC = () => {
         throw new Error("Failed to fetch requests");
       }
       const data = await response.json();
-
+      console.log(data);
       // Process each request to fetch usernames for approverPath
       const updatedRequests = await Promise.all(data.map(async (req: any) => {
         // Fetch usernames for approverPath
+        const resp = await fetch(`http://localhost:5000/api/applications/${req._id}/mapstatus`);
+        const approversmap = await resp.json()
+        console.log(approversmap)
         const usernames = await Promise.all(req.approverPath.map(async (approverId: string) => {
           try {
             const userResponse = await fetch(`http://localhost:5000/api/users/${approverId}`); 
@@ -38,14 +41,11 @@ const User: React.FC = () => {
             return "Unknown User";
           }
         }));
+    
 
-        // Construct description with usernames
-        const approvers = usernames.map((username, index) => `Approver ${index + 1}: ${username}`).join(", ");
-
-        // Return updated request object with description
         return {
           ...req,
-          approvers: approvers
+          approvers: approversmap
         };
       }));
 
@@ -61,7 +61,7 @@ const User: React.FC = () => {
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold w-60 mb-2 p-4 text-white bg-black text-center rounded-md">Pending</h2> 
           <div className="space-y-4 pt-2">
-            {requests.filter(req => req.status === "pending").map(req => (
+            {requests.filter(req => req.status.toLowerCase()  === "pending").map(req => (
               <ReviewCard
                 key={req._id}
                 avatarText={req.creatorId.substring(0, 1)}
