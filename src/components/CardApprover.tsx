@@ -9,11 +9,6 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-<<<<<<< HEAD
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-=======
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Button from '@mui/material/Button';
@@ -24,13 +19,8 @@ interface ReviewCardProps {
   subheader: string;
   content: string;
   description: string;
-<<<<<<< HEAD
-  onApprove: () => void;
-  onReject: () => void;
-=======
   onApprove: () => Promise<void>;
   onReject: (reason: string) => Promise<void>;
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
   imageUrl?: string;
   status: "pending" | "approved" | "rejected"; // Add status prop
 }
@@ -47,19 +37,14 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
   status,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
-<<<<<<< HEAD
-=======
   const [showPopup, setShowPopup] = React.useState(false);
   const [rejectReason, setRejectReason] = React.useState("");
   const [popupError, setPopupError] = React.useState("");
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-<<<<<<< HEAD
-=======
   const handleOpenPopup = () => {
     setShowPopup(true);
   };
@@ -85,7 +70,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
     }
   };
 
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
   return (
     <Card sx={{ maxWidth: 345, boxShadow: '0 0 10px rgba(0,0,0,0.6)' }}>
       <CardHeader
@@ -144,11 +128,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
             <Button variant="contained" color="primary" onClick={onApprove}>
               Approve
             </Button>
-<<<<<<< HEAD
-            <Button variant="contained" color="secondary" onClick={onReject}>
-=======
             <Button variant="contained" color="secondary" onClick={handleOpenPopup}>
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
               Reject
             </Button>
           </>
@@ -160,8 +140,6 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           </Typography>
         )}
       </CardActions>
-<<<<<<< HEAD
-=======
       
       {/* Popup for rejection reason */}
       {showPopup && (
@@ -181,13 +159,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           </div>
         </div>
       )}
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
     </Card>
   );
 };
 
-<<<<<<< HEAD
 export default ReviewCard;
-=======
-export default ReviewCard;
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355

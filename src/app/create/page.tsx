@@ -26,10 +26,7 @@ const Create: React.FC = () => {
   });
   const [usernames, setUsernames] = useState<Username[]>([]);
   const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
-<<<<<<< HEAD
-=======
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
 
   useEffect(() => {
     const fetchUsernames = async () => {
@@ -73,10 +70,6 @@ const Create: React.FC = () => {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
-<<<<<<< HEAD
-           
-=======
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
         },
         body: JSON.stringify(updatedFormData),
       });
@@ -84,10 +77,7 @@ const Create: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Form data saved successfully:", result);
-<<<<<<< HEAD
-=======
         setIsSubmitted(true);
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
       } else {
         const result = await response.json();
         console.error("Failed to save form data:", response.statusText, result.message);
@@ -99,22 +89,11 @@ const Create: React.FC = () => {
   };
 
   const handleTextEditorChange = (content: string) => {
-<<<<<<< HEAD
-    const strippedContent = content.replace(/<\/?[^>]+(>|$)/g, "");
-    
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      description: strippedContent,
-    }));
-  };
-  
-=======
     setFormData(prevFormData => ({
       ...prevFormData,
       description: content,
     }));
   };
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prevFormData => ({
@@ -146,31 +125,16 @@ const Create: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form Data on Submit:", formData);
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
     const approverPathWithIds = await Promise.all(
       formData.approverPath.map(async (username) => {
         const userId = await fetchUserIdByUsername(username);
         return userId;
       })
     );
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
     const updatedFormData = {
       ...formData,
       approverPath: approverPathWithIds.filter(id => id !== null) as string[],
     };
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
     console.log("Updated Form Data with IDs:", updatedFormData);
     await saveFormData(updatedFormData);
   };
@@ -179,104 +143,6 @@ const Create: React.FC = () => {
     <DefaultLayout>
       <Breadcrumb pageName="Create" />
       <div className="mx-auto max-w-270">
-<<<<<<< HEAD
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="title" className="block text-sm font-medium text-black dark:text-white">
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={formData.title}
-              onChange={handleTitleChange}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="textEditor" className="block text-sm font-medium text-black dark:text-white">
-              Description
-            </label>
-            <ReactQuill
-              id="textEditor"
-              value={formData.description}
-              onChange={handleTextEditorChange}
-              modules={{
-                toolbar: [
-                  [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-                  [{size: []}],
-                  ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                  [{'list': 'ordered'}, {'list': 'bullet'}, 
-                   {'indent': '-1'}, {'indent': '+1'}],
-                  ['link', 'image', 'video'],
-                  ['clean']
-                ],
-              }}
-              formats={[
-                'header', 'font', 'size',
-                'bold', 'italic', 'underline', 'strike', 'blockquote',
-                'list', 'bullet', 'indent',
-                'link', 'image', 'video'
-              ]}
-              className="mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-            />
-          </div>
-
-          {formData.approverPath.map((dropdownValue, index) => (
-            <div key={index} className="mb-4">
-              <label htmlFor={`dropdown-${index}`} className="block text-sm font-medium text-black dark:text-white">
-                Dropdown {index + 1}
-              </label>
-              <select
-                id={`dropdown-${index}`}
-                value={dropdownValue}
-                onChange={(e) => handleDropdownChange(e, index)}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
-              >
-                <option value="">Select an option</option>
-                {usernames.map((username) => (
-                  <option key={username.username} value={username.username}>
-                    {username.username}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
-{/* 
-          <button
-            type="button"
-            onClick={handleAddDropdown}
-            className="mb-4 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 dark:text-white"
-          >
-            + Add Dropdown
-          </button>
-
-          <button
-            type="submit"
-            className="py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white"
-          >
-            Submit
-          </button> */}
-          {/* Button to Add Dropdown Box */}
-<button
-  type="button"
-  onClick={handleAddDropdown}
-  className="mb-4 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 dark:text-white"
->
-  + Add Dropdown
-</button>
-
-{/* Submit Button */}
-<button
-  type="submit"
-  className="block py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white mt-4"
->
-  Submit
-</button>
-
-        </form>
-=======
         {isSubmitted ? (
           <p className="text-xl font-bold text-green-500">Application created successfully.</p>
         ) : (
@@ -364,7 +230,6 @@ const Create: React.FC = () => {
             </div>
           </form>
         )}
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
       </div>
     </DefaultLayout>
   );

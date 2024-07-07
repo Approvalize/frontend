@@ -1,9 +1,5 @@
 import Link from "next/link";
 import DarkModeSwitcher from "./DarkModeSwitcher";
-<<<<<<< HEAD
-//import DropdownNotification from "./DropdownNotification";
-=======
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 
@@ -111,10 +107,6 @@ const Header = (props: {
             {/* <!-- Dark Mode Toggler --> */}
 
             {/* <!-- Notification Menu Area --> */}
-<<<<<<< HEAD
-        
-=======
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
             {/* <!-- Notification Menu Area --> */}
 
             {/* <!-- Chat Notification Area --> */}
@@ -130,8 +122,4 @@ const Header = (props: {
   );
 };
 
-<<<<<<< HEAD
 export default Header;
-=======
-export default Header;
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355

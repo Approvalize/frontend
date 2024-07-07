@@ -14,10 +14,6 @@
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.20",
     "apexcharts": "^3.45.2",
-<<<<<<< HEAD
-    "dotenv": "^16.4.5",
-=======
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.5.3",
     "next": "^14.1.0",

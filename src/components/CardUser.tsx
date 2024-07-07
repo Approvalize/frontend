@@ -69,18 +69,12 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-<<<<<<< HEAD
-      <Typography variant="body2" color="RedText">
-          View in Detail
-        </Typography>
-=======
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
         <IconButton
           onClick={handleExpandClick}
           aria-expanded={expanded}
@@ -92,11 +86,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-<<<<<<< HEAD
-          {content}
-=======
         {content}
->>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
         </CardContent>
       </Collapse>
     </Card>
