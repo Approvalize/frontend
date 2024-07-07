@@ -13,7 +13,6 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Button from '@mui/material/Button';
 
 interface ReviewCardProps {
   avatarText: string;
@@ -21,21 +20,15 @@ interface ReviewCardProps {
   subheader: string;
   content: string;
   description: string;
-  onApprove: () => void;
-  onReject: () => void;
-  imageUrl?: string;
-  status: "pending" | "approved" | "rejected"; // Add status prop
+  status: "pending" | "approved" | "rejected"; 
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({
+const ReviewCardOnClick: React.FC<ReviewCardProps> = ({
   avatarText,
   title,
   subheader,
   content,
   description,
-  onApprove,
-  onReject,
-  imageUrl,
   status,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
@@ -60,22 +53,14 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
         title={title}
         subheader={subheader}
       />
-      {imageUrl && (
-        <CardMedia
-          component="img"
-          height="194"
-          image={imageUrl}
-          alt="Image"
-        />
-      )}
+      
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {content}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        
-        <Typography variant="body2" color="RedText">
+      <Typography variant="body2" color="RedText">
           View in Detail
         </Typography>
         <IconButton
@@ -96,26 +81,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           <Typography paragraph>{description}</Typography>
         </CardContent>
       </Collapse>
-      <CardActions>
-        {status === "pending" && (
-          <>
-            <Button variant="contained" color="primary" onClick={onApprove}>
-              Approve
-            </Button>
-            <Button variant="contained" color="secondary" onClick={onReject}>
-              Reject
-            </Button>
-          </>
-        )}
-        {/* Optionally, you can add a conditional check for "approved" status to hide buttons */}
-        {status === "approved" && (
-          <Typography variant="body2" color="text.secondary">
-            Approved
-          </Typography>
-        )}
-      </CardActions>
     </Card>
   );
 };
 
-export default ReviewCard;
+export default ReviewCardOnClick;

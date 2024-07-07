@@ -88,11 +88,14 @@ const Create: React.FC = () => {
   };
 
   const handleTextEditorChange = (content: string) => {
+    const strippedContent = content.replace(/<\/?[^>]+(>|$)/g, "");
+    
     setFormData(prevFormData => ({
       ...prevFormData,
-      description: content,
+      description: strippedContent,
     }));
   };
+  
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prevFormData => ({

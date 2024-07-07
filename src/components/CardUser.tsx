@@ -65,16 +65,13 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       )}
       <CardContent sx={{ color: 'white' }}>
         <Typography variant="body2" color="text.secondary">
-          {content}
+          {description["approvers"]}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
+      <Typography variant="body2" color="RedText">
+          View in Detail
+        </Typography>
         <IconButton
           onClick={handleExpandClick}
           aria-expanded={expanded}
@@ -86,7 +83,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {description["approvers"]}
+          {content}
         </CardContent>
       </Collapse>
     </Card>
