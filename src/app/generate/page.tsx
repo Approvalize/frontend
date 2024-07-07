@@ -277,21 +277,38 @@ const Generate: React.FC = () => {
           ))}
 
           {/* Button to Add Dropdown Box */}
-          <button
+          {/* <button
             type="button"
             onClick={handleAddDropdown}
             className="mb-4 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 dark:text-white"
           >
             + Add Dropdown
-          </button>
-
+          </button> */}
+          
+          
           {/* Submit Button */}
-          <button
+          {/* <button
             type="submit"
             className="py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white"
           >
             Submit
-          </button>
+          </button> */}
+          {/* Button to Add Dropdown Box */}
+        <button type="button"
+  onClick={handleAddDropdown}
+  className="mb-4 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 dark:text-white"
+>
+  + Add Dropdown
+</button>
+
+{/* Submit Button */}
+<button
+  type="submit"
+  className="block py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white mt-4"
+>
+  Submit
+</button>
+
         </form>
       </div>
     </DefaultLayout>

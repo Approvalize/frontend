@@ -42,7 +42,7 @@ const User: React.FC = () => {
 
         return {
           ...req,
-          approvers: approversmap.join('\n')
+          approvers: approversmap
         };
       }));
 
