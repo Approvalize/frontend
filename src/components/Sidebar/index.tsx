@@ -102,6 +102,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
+<<<<<<< HEAD
               <SidebarLinkGroup
                 activeCondition={
                   pathname === "/" || pathname.includes("dashboard")
@@ -193,6 +194,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   );
                 }}
               </SidebarLinkGroup>
+=======
+>>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
               {/* <!-- Menu Item Dashboard --> */}
 
               {/* <!-- Menu Item Calendar --> */}
@@ -202,6 +205,37 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Profile --> */}
               <li>
                 <Link
+<<<<<<< HEAD
+=======
+                  href="/dashboard"
+                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("dashboard") && "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <svg
+                    className="fill-current"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 4C7.03125 4 3 8.03125 3 13C3 17.9688 7.03125 22 12 22C16.9688 22 21 17.9688 21 13C21 8.03125 16.9688 4 12 4ZM12 20.5C7.8575 20.5 4.5 17.1425 4.5 13C4.5 8.8575 7.8575 5.5 12 5.5C16.1425 5.5 19.5 8.8575 19.5 13C19.5 17.1425 16.1425 20.5 12 20.5Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M14.8375 14.475L16.7187 9.73125C16.8187 9.475 16.6875 9.1875 16.4312 9.0875C16.175 8.9875 15.8875 9.11875 15.7875 9.375L13.9062 14.1187C13.8187 14.375 14.125 14.625 14.3687 14.3687L16.25 12.4875C16.4687 12.2687 16.3375 11.875 16.0562 11.7875C15.775 11.7 15.375 11.9312 15.1875 12.1187L13.3062 14C13.0875 14.2187 13.375 14.5125 13.6312 14.425C13.8875 14.3375 14.475 13.7312 14.5562 13.4312C14.6375 13.1312 14.5375 12.75 14.2312 12.6312C13.9375 12.5187 13.4125 12.725 13.2375 12.9375L11.3562 14.8187C10.9187 15.2562 10.6562 16.1562 10.975 16.8125C11.275 17.4562 11.8562 17.875 12.5 17.875C13.0625 17.875 13.7187 17.625 14.1312 17.2312L15.075 16.2875C15.3312 16.0312 15.2312 15.6562 14.9375 15.5375C14.6375 15.4187 14.2312 15.5437 14.05 15.725C13.8687 15.9062 13.65 16.1062 13.475 15.9312L14.8375 14.475Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  Dashboard
+                </Link>
+              </li>
+
+              <li>
+                <Link
+>>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
                   href="/profile"
                   className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes("profile") && "bg-graydark dark:bg-meta-4"
@@ -385,7 +419,37 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   return (
                     <React.Fragment>
                       
+<<<<<<< HEAD
                       
+=======
+                      <li>
+                        <Link
+                          href="/documentation"
+                          className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            pathname.includes("settings") &&
+                            "bg-graydark dark:bg-meta-4"
+                          }`}
+                        >
+                          <svg
+                            className="fill-current"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M13 2H3C1.89543 2 1 2.89543 1 4V14C1 15.1046 1.89543 16 3 16H15C16.1046 16 17 15.1046 17 14V6C17 4.89543 16.1046 4 15 4V5C15 5.55228 14.5523 6 14 6H13V2ZM14 6H6V5H14V6ZM3 3H13V5H3V3ZM15 14H3V7H15V14Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span className="ml-2">Documentation</span>
+                        </Link>
+                      </li>
+
+>>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
                     </React.Fragment>
                   );
                 }}
@@ -393,6 +457,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Ui Elements --> */}
 
               {/* <!-- Menu Item Auth Pages --> */}
+<<<<<<< HEAD
               <SidebarLinkGroup
                 activeCondition={
                   pathname === "/auth" || pathname.includes("auth")
@@ -487,6 +552,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   );
                 }}
               </SidebarLinkGroup>
+=======
+              
+>>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
               {/* <!-- Menu Item Auth Pages --> */}
             </ul>
           </div>
@@ -497,5 +565,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   );
 };
 
+<<<<<<< HEAD
 export default Sidebar;
 
+=======
+export default Sidebar;
+>>>>>>> 9337bca8eee42b3788a416cfea6c2d5b49672355
