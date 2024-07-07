@@ -1,7 +1,7 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from "react";
 import ReviewCard from "@/components/CardApprover";
-import ReviewCardOnClick from "../CardApproverOnClick";
+import ReviewCardOnClick from "@/components/CardApproverOnClick";
 import { useUser } from "@/components/UserContext";
 
 interface Review {
@@ -9,23 +9,13 @@ interface Review {
   avatarText: string;
   title: string;
   subheader: string;
+  createdAt: string;
   content: string;
   description: string;
-  status: string;
+  status: "pending" | "approved" | "rejected";
   approvers: string;
-  onApprove?: () => void; 
-  onReject?: () => void; 
-}
-
-interface ReviewOnClick {
-  _id: string;
-  avatarText: string;
-  title: string;
-  subheader: string;
-  content: string;
-  description: string;
-  status: string;
-  approvers: string;
+  creatorId: string; // Add creatorId to Review interface
+  creatorUsername: string; // Add creatorUsername to Review interface
 }
 
 const Approver: React.FC = () => {
@@ -33,7 +23,6 @@ const Approver: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
 
   const fetchRequests = async (userId: string) => {
     try {
@@ -42,35 +31,64 @@ const Approver: React.FC = () => {
         throw new Error("Failed to fetch requests");
       }
       const data = await response.json();
-      console.log(data);
-      // Process each request to fetch usernames for approverPath
-      const updatedRequests = await Promise.all(data.map(async (req: any) => {
-        // Fetch usernames for approverPath
-        const usernames = await Promise.all(req.approverPath.map(async (approverId: string) => {
+      
+      const updatedRequests = await Promise.all(
+        data.map(async (req: any) => {
+          // Fetch usernames for approverPath
+  
+          // Fetch username for creatorId
           try {
-            const userResponse = await fetch(`http://localhost:5000/api/users/${approverId}`);
-            if (!userResponse.ok) {
-              throw new Error("Failed to fetch user details");
+            const creatorResponse = await fetch(`http://localhost:5000/api/users/${req.creatorId}`);
+            if (!creatorResponse.ok) {
+              throw new Error("Failed to fetch creator details");
             }
-            const userData = await userResponse.json();
-            
-            return userData.username; // Assuming username is available in user data
+            const creatorData = await creatorResponse.json();
+            const creatorUsername = creatorData.username;
+
+            const createdAtDate = new Date(req.createdAt);
+            const formattedCreatedAt = createdAtDate.toISOString().split('T')[0];
+  
+            // Construct title with creator's username
+            const title = `${req.title} `;
+  
+            // Construct description with usernames
+            const approvers = await Promise.all(
+              req.approverPath.map(async (approverId: string) => {
+                try {
+                  const userResponse = await fetch(`http://localhost:5000/api/users/${approverId}`);
+                  if (!userResponse.ok) {
+                    throw new Error("Failed to fetch user details");
+                  }
+                  const userData = await userResponse.json();
+                  
+                  return userData.username; // Assuming username is available in user data
+                } catch (error) {
+                  console.error("Error fetching user details:", error);
+                  return "Unknown User";
+                }
+              })
+            );
+  
+            return {
+              ...req,
+              title: title,
+              approvers: approvers.join(", "),
+              creatorUsername: creatorUsername, 
+              createdAt: formattedCreatedAt,
+            };
           } catch (error) {
-            console.error("Error fetching user details:", error);
-            return "Unknown User";
+            console.error("Error fetching creator details:", error);
+            return {
+              ...req,
+              title: `${req.title} by Unknown User`,
+              approvers: req.approverPath.join(", "),
+              creatorUsername: "Unknown User",
+              createdAt: req.createdAt,
+            };
           }
-        }));
-
-        // Construct description with usernames
-        const approvers = usernames.map((username, index) => `Approver ${index + 1}: ${username}`).join(", ");
-
-        // Return updated request object with approvers
-        return {
-          ...req,
-          approvers: approvers
-        };
-      }));
-
+        })
+      );
+  
       setReviews(updatedRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -79,6 +97,7 @@ const Approver: React.FC = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (userId) {
@@ -87,31 +106,31 @@ const Approver: React.FC = () => {
   }, [userId]);
 
   const handleApprove = async (id: string) => {
-
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:5000/api/applications/${id}/approve`,{
+    const res = await fetch(`http://localhost:5000/api/applications/${id}/approve`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`         
-      }})
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     setReviews((prevReviews) =>
       prevReviews.map((review) =>
         review._id === id ? { ...review, status: "approved" } : review
       )
     );
-  };  
+  };
 
   const handleReject = async (id: string) => {
-
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:5000/api/applications/${id}/reject`,{
+    const res = await fetch(`http://localhost:5000/api/applications/${id}/reject`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`         
-      }})
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     setReviews((prevReviews) =>
       prevReviews.map((review) =>
@@ -120,50 +139,37 @@ const Approver: React.FC = () => {
     );
   };
 
-  const renderReviews = (status: "pending" | "approved" | "rejected") => {
+  const renderPendingReviews = () => {
     return reviews
-      .filter((review) => review.status === status)
+      .filter((review) => review.status === "pending")
       .map((review) => (
         <ReviewCard
           key={review._id}
           avatarText={review.avatarText}
-          title={review.title}
-          subheader={review.subheader}
-          content={review.content}
-          description={`${review.description}\n${review.approvers}`}
-          // Conditionally render approve and reject buttons based on status
-          onApprove={status === "pending"
-            ? () => handleApprove(review._id)
-            : () => { } // Pass undefined to not render the button
-          }
-          onReject={status === "pending"
-            ? () => handleReject(review._id)
-            : () => { } // Pass undefined to not render the button
-          } status={"pending"}        />
+          title={review.creatorUsername}
+          subheader={review.createdAt}
+          content={review.title}
+          description={review.description}
+          status={review.status}
+          onApprove={() => handleApprove(review._id)}
+          onReject={() => handleReject(review._id)}
+        />
       ));
   };
 
-  const renderReviewsOnClick = (status: "pending" | "approved" | "rejected") => {
+  const renderAcceptedRejectedReviews = (status: "approved" | "rejected") => {
     return reviews
       .filter((review) => review.status === status)
       .map((review) => (
         <ReviewCardOnClick
           key={review._id}
           avatarText={review.avatarText}
-          title={review.title}
+          title={review.creatorUsername}
           subheader={review.subheader}
-          content={review.content}
+          content={review.title}
           description={`${review.description}\n${review.approvers}`}
-          status={"rejected"}          // // Conditionally render approve and reject buttons based on status
-          // onApprove={status === "pending"
-          //   ? () => handleApprove(review._id)
-          //   : () => { } // Pass undefined to not render the button
-          // }
-          // onReject={status === "pending"
-          //   ? () => handleReject(review._id)
-          //   : () => { } // Pass undefined to not render the button
-          // } status={"pending"}        
-          />
+          status={review.status}
+        />
       ));
   };
 
@@ -181,19 +187,19 @@ const Approver: React.FC = () => {
         <h2 className="text-lg font-bold w-60 mb-2 p-4 text-white bg-black text-center rounded-md">
           Pending
         </h2>
-        <div className="space-y-4 pt-2">{renderReviews("pending")}</div>
+        <div className="space-y-4 pt-2">{renderPendingReviews()}</div>
       </div>
       <div className="flex flex-col items-center">
         <h2 className="text-lg font-bold w-60 mb-2 p-4 text-white bg-black text-center rounded-md">
           Accepted
         </h2>
-        <div className="space-y-4 pt-2">{renderReviews("approved")}</div>
+        <div className="space-y-4 pt-2">{renderAcceptedRejectedReviews("approved")}</div>
       </div>
       <div className="flex flex-col items-center">
         <h2 className="text-lg font-bold w-60 mb-2 p-4 text-white bg-black text-center rounded-md">
           Rejected
         </h2>
-        <div className="space-y-4 pt-2">{renderReviews("rejected")}</div>
+        <div className="space-y-4 pt-2">{renderAcceptedRejectedReviews("rejected")}</div>
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       )}
       <CardContent sx={{ color: 'white' }}>
         <Typography variant="body2" color="text.secondary">
-          {content}
+          {description["approvers"]}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -86,7 +86,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {description["approvers"]}
+        {content}
         </CardContent>
       </Collapse>
     </Card>

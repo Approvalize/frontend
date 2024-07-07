@@ -9,8 +9,6 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Button from '@mui/material/Button';
@@ -21,8 +19,8 @@ interface ReviewCardProps {
   subheader: string;
   content: string;
   description: string;
-  onApprove: () => void;
-  onReject: () => void;
+  onApprove: () => Promise<void>;
+  onReject: (reason: string) => Promise<void>;
   imageUrl?: string;
   status: "pending" | "approved" | "rejected"; // Add status prop
 }
@@ -39,9 +37,37 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
   status,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
+  const [showPopup, setShowPopup] = React.useState(false);
+  const [rejectReason, setRejectReason] = React.useState("");
+  const [popupError, setPopupError] = React.useState("");
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setRejectReason("");
+    setPopupError("");
+  };
+
+  const handleRejectClick = async () => {
+    if (rejectReason.trim() === "") {
+      setPopupError("Please provide a reason for rejection");
+      return;
+    }
+
+    try {
+      await onReject(rejectReason);
+      handleClosePopup(); // Close popup on successful rejection
+    } catch (error) {
+      console.error("Error rejecting application:", error);
+      // Handle error state if needed
+    }
   };
 
   return (
@@ -74,12 +100,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
+        
+        <Typography variant="body2" color="RedText">
+          View in Detail
+        </Typography>
         <IconButton
           onClick={handleExpandClick}
           aria-expanded={expanded}
@@ -104,7 +128,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
             <Button variant="contained" color="primary" onClick={onApprove}>
               Approve
             </Button>
-            <Button variant="contained" color="secondary" onClick={onReject}>
+            <Button variant="contained" color="secondary" onClick={handleOpenPopup}>
               Reject
             </Button>
           </>
@@ -116,6 +140,25 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           </Typography>
         )}
       </CardActions>
+      
+      {/* Popup for rejection reason */}
+      {showPopup && (
+        <div className="popup">
+          <input
+            type="text"
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            placeholder="Reason for rejection"
+            className="popup-input m-4"
+          />
+          {popupError && <p className="popup-error">{popupError}</p>}
+          <div className="popup-buttons m-4">
+            <Button variant="contained" style={{ backgroundColor: 'green', color: 'white' }} onClick={handleRejectClick}>
+              Submit
+            </Button>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };

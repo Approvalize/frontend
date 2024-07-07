@@ -26,6 +26,7 @@ const Create: React.FC = () => {
   });
   const [usernames, setUsernames] = useState<Username[]>([]);
   const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUsernames = async () => {
@@ -69,7 +70,6 @@ const Create: React.FC = () => {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
-           
         },
         body: JSON.stringify(updatedFormData),
       });
@@ -77,6 +77,7 @@ const Create: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Form data saved successfully:", result);
+        setIsSubmitted(true);
       } else {
         const result = await response.json();
         console.error("Failed to save form data:", response.statusText, result.message);
@@ -124,19 +125,19 @@ const Create: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form Data on Submit:", formData);
-  
+
     const approverPathWithIds = await Promise.all(
       formData.approverPath.map(async (username) => {
         const userId = await fetchUserIdByUsername(username);
         return userId;
       })
     );
-  
+
     const updatedFormData = {
       ...formData,
       approverPath: approverPathWithIds.filter(id => id !== null) as string[],
     };
-  
+
     console.log("Updated Form Data with IDs:", updatedFormData);
     await saveFormData(updatedFormData);
   };
@@ -145,85 +146,93 @@ const Create: React.FC = () => {
     <DefaultLayout>
       <Breadcrumb pageName="Create" />
       <div className="mx-auto max-w-270">
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="title" className="block text-sm font-medium text-black dark:text-white">
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={formData.title}
-              onChange={handleTitleChange}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="textEditor" className="block text-sm font-medium text-black dark:text-white">
-              Description
-            </label>
-            <ReactQuill
-              id="textEditor"
-              value={formData.description}
-              onChange={handleTextEditorChange}
-              modules={{
-                toolbar: [
-                  [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-                  [{size: []}],
-                  ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                  [{'list': 'ordered'}, {'list': 'bullet'}, 
-                   {'indent': '-1'}, {'indent': '+1'}],
-                  ['link', 'image', 'video'],
-                  ['clean']
-                ],
-              }}
-              formats={[
-                'header', 'font', 'size',
-                'bold', 'italic', 'underline', 'strike', 'blockquote',
-                'list', 'bullet', 'indent',
-                'link', 'image', 'video'
-              ]}
-              className="mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-            />
-          </div>
-
-          {formData.approverPath.map((dropdownValue, index) => (
-            <div key={index} className="mb-4">
-              <label htmlFor={`dropdown-${index}`} className="block text-sm font-medium text-black dark:text-white">
-                Dropdown {index + 1}
+        {isSubmitted ? (
+          <p className="text-xl font-bold text-green-500">Application created successfully.</p>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="title" className="block text-sm font-medium text-black dark:text-white">
+                Title
               </label>
-              <select
-                id={`dropdown-${index}`}
-                value={dropdownValue}
-                onChange={(e) => handleDropdownChange(e, index)}
+              <input
+                type="text"
+                id="title"
+                value={formData.title}
+                onChange={handleTitleChange}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
-              >
-                <option value="">Select an option</option>
-                {usernames.map((username) => (
-                  <option key={username.username} value={username.username}>
-                    {username.username}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
-          ))}
 
-          <button
-            type="button"
-            onClick={handleAddDropdown}
-            className="mb-4 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 dark:text-white"
-          >
-            + Add Dropdown
-          </button>
+            <div className="mb-4">
+              <label htmlFor="textEditor" className="block text-sm font-medium text-black dark:text-white">
+                Description
+              </label>
+              <ReactQuill
+                id="textEditor"
+                value={formData.description}
+                onChange={handleTextEditorChange}
+                modules={{
+                  toolbar: [
+                    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+                    [{size: []}],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                    [{'list': 'ordered'}, {'list': 'bullet'}, 
+                     {'indent': '-1'}, {'indent': '+1'}],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                  ],
+                }}
+                formats={[
+                  'header', 'font', 'size',
+                  'bold', 'italic', 'underline', 'strike', 'blockquote',
+                  'list', 'bullet', 'indent',
+                  'link', 'image', 'video'
+                ]}
+                className="mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white"
-          >
-            Submit
-          </button>
-        </form>
+            {formData.approverPath.map((dropdownValue, index) => (
+              <div key={index} className="mb-4">
+                <label htmlFor={`dropdown-${index}`} className="block text-sm font-medium text-black dark:text-white">
+                  Dropdown {index + 1}
+                </label>
+                <select
+                  id={`dropdown-${index}`}
+                  value={dropdownValue}
+                  onChange={(e) => handleDropdownChange(e, index)}
+                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
+                >
+                  <option value="">Select an option</option>
+                  {usernames.map((username) => (
+                    <option key={username.username} value={username.username}>
+                      {username.username}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+
+            <div className="mb-4">
+              <button
+                type="button"
+                onClick={handleAddDropdown}
+                className="py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 dark:text-white"
+              >
+                + Add Dropdown
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <button
+                type="submit"
+                className="py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-dark focus:ring-opacity-50 dark:text-white"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </DefaultLayout>
   );
