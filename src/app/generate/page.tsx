@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import 'react-quill/dist/quill.snow.css';
 
 const Generate: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -73,8 +73,31 @@ const Generate: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log(formData);
+  };
+
+  const handleGenerate = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt: formData.inputText }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const content = await res.text();
+      setFormData({
+        ...formData,
+        textEditorContent: content,
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -96,6 +119,15 @@ const Generate: React.FC = () => {
               className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-primary focus:border-primary"
             />
           </div>
+
+          {/* Generate Button */}
+          <button
+            type="button"
+            onClick={handleGenerate}
+            className="mb-4 py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 dark:text-white"
+          >
+            Generate
+          </button>
 
           {/* Text Editor */}
           <div className="mb-4">

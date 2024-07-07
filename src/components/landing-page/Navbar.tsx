@@ -21,6 +21,9 @@ export const Navbar = () => {
           
         </div>
         <div className="ml-18 mr-3 space-x-4 lg:flex nav__item">
+          <Link href="/admin_auth" className="px-6 flex py-2 aling-middle font-bold text-white">
+                Admin
+          </Link>
           <Link href="/" className="px-6 flex py-2 aling-middle font-bold text-white">
                Home
           </Link>

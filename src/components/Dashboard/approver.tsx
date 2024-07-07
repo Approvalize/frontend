@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import ReviewCard from "@/components/CardApprover";
+import ReviewCardOnClick from "../CardApproverOnClick";
 import { useUser } from "@/components/UserContext";
 
 interface Review {
@@ -14,6 +15,17 @@ interface Review {
   approvers: string;
   onApprove?: () => void; 
   onReject?: () => void; 
+}
+
+interface ReviewOnClick {
+  _id: string;
+  avatarText: string;
+  title: string;
+  subheader: string;
+  content: string;
+  description: string;
+  status: string;
+  approvers: string;
 }
 
 const Approver: React.FC = () => {
@@ -128,6 +140,30 @@ const Approver: React.FC = () => {
             ? () => handleReject(review._id)
             : () => { } // Pass undefined to not render the button
           } status={"pending"}        />
+      ));
+  };
+
+  const renderReviewsOnClick = (status: "pending" | "approved" | "rejected") => {
+    return reviews
+      .filter((review) => review.status === status)
+      .map((review) => (
+        <ReviewCardOnClick
+          key={review._id}
+          avatarText={review.avatarText}
+          title={review.title}
+          subheader={review.subheader}
+          content={review.content}
+          description={`${review.description}\n${review.approvers}`}
+          status={"rejected"}          // // Conditionally render approve and reject buttons based on status
+          // onApprove={status === "pending"
+          //   ? () => handleApprove(review._id)
+          //   : () => { } // Pass undefined to not render the button
+          // }
+          // onReject={status === "pending"
+          //   ? () => handleReject(review._id)
+          //   : () => { } // Pass undefined to not render the button
+          // } status={"pending"}        
+          />
       ));
   };
 
