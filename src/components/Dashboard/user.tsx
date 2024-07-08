@@ -76,7 +76,7 @@ const User: React.FC = () => {
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold w-60 mb-2 p-4 text-white bg-black text-center rounded-md">Accepted</h2> 
           <div className="space-y-4 pt-2">
-            {requests.filter(req => req.status === "accepted").map(req => (
+            {requests.filter(req => req.status === "approved").map(req => (
               <ReviewCard
                 key={req._id}
                 avatarText={req.creatorId.substring(0, 1)}

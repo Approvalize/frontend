@@ -148,7 +148,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
             type="text"
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
-            placeholder="Reason for rejection"
+            placeholder="rejection"
             className="popup-input m-4"
           />
           {popupError && <p className="popup-error">{popupError}</p>}
